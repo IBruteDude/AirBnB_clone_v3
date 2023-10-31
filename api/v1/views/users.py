@@ -7,8 +7,7 @@ from models.user import User
 
 
 
-@app_views.route('/users/', methods=['GET'])
-@app_views.route('/users', methods=['GET'])
+@app_views.route('/users', methods=['GET'], strict_slashes=False)
 def list_users():
     '''Retrieves a list of all User objects'''
     list_users = [obj.to_dict() for obj in storage.all("User").values()]
@@ -25,7 +24,7 @@ def get_user(user_id):
     return jsonify(user_obj[0])
 
 
-@app_views.route('/users/<user_id>', methods=['DELETE'])
+@app_views.route('/users/<user_id>', methods=['DELETE'], strict_slashes=False)
 def delete_user(user_id):
     '''Deletes a User object'''
     all_users = storage.all("User").values()
@@ -40,7 +39,7 @@ def delete_user(user_id):
     return jsonify({}), 200
 
 
-@app_views.route('/users/', methods=['POST'])
+@app_views.route('/users/', methods=['POST'], strict_slashes=False)
 def create_user():
     '''Creates a User'''
     if not request.get_json():

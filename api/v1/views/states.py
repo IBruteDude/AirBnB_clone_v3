@@ -1,49 +1,64 @@
 #!/usr/bin/python3
 """handle routes to the states api endpoint"""
-from flask import request
+from flask import request, jsonify, abort
 from models import storage
 from models.state import State
-from app import app
+from api.v1.views import app_views
 
 
-@app.route('/api/v1/states/<state_id>', methods=['GET', 'DELETE', 'POST', 'PUT'])
-def states_handler(state_id=None):
-    match(request.method):
-        case 'GET':
-            storage.get(State, state_id)
-        case 'DELETE':
-            pass
-        case 'POST':
-            pass
-        case 'PUT':
-            pass
 
-"""
-Create a new view for State objects that handles all default RESTFul API actions:
+@app_views.route('/states',
+                 methods=['GET'], strict_slashes=False)
+def states_getter():
+    states = storage.all(State)
 
-In the file api/v1/views/states.py
-You must use to_dict() to retrieve an object into a valid JSON
-Retrieves the list of all State objects: GET /api/v1/states
+    return jsonify([state.to_dict() for state in states.values()]), 200
 
-Retrieves a State object: GET /api/v1/states/<state_id>
 
-If the state_id is not linked to any State object, raise a 404 error
-Deletes a State object:: DELETE /api/v1/states/<state_id>
+@app_views.route('/states/<state_id>',
+                 methods=['GET'], strict_slashes=False)
+def state_getter(state_id):
+    result = storage.get(State, state_id)
+    if result is None:
+        abort(404)
+    return jsonify(result.to_dict()), 200
 
-If the state_id is not linked to any State object, raise a 404 error
-Returns an empty dictionary with the status code 200
-Creates a State: POST /api/v1/states
+@app_views.route('/states/<state_id>',
+           methods=['DELETE'], strict_slashes=False)
+def states_deleter(state_id=None):
+    if state_id is None:
+        abort(404)
+    result = storage.get(State, state_id)
+    if result is None:
+        abort(404)
+    storage.delete(result)
+    storage.save()
+    return jsonify({}), 200
 
-You must use request.get_json from Flask to transform the HTTP body request to a dictionary
-If the HTTP body request is not valid JSON, raise a 400 error with the message Not a JSON
-If the dictionary doesn’t contain the key name, raise a 400 error with the message Missing name
-Returns the new State with the status code 201
-Updates a State object: PUT /api/v1/states/<state_id>
+@app_views.route('/states',
+           methods=['POST'], strict_slashes=False)
+def states_poster():
+    json_body = request.get_json()
+    if json_body is None:
+        abort(400, "Not a JSON")
+    if json_body.get("name") is None:
+        abort(400, "Missing name")
+    new_state = State(name=json_body["name"])
+    new_state.save()
+    return jsonify(new_state.to_dict()), 201
 
-If the state_id is not linked to any State object, raise a 404 error
-You must use request.get_json from Flask to transform the HTTP body request to a dictionary
-If the HTTP body request is not valid JSON, raise a 400 error with the message Not a JSON
-Update the State object with all key-value pairs of the dictionary.
-Ignore keys: id, created_at and updated_at
-Returns the State object with the status code 200
-"""
+@app_views.route('/states/<state_id>',
+           methods=['PUT'], strict_slashes=False)
+def states_putter(state_id):
+    result = storage.get(State, state_id)
+    if result is None:
+        abort(404)
+    json_body = request.get_json()
+    if json_body is None:
+        abort(400, "Not a JSON")
+    new_state = State(name="dummy")
+    new_state.__dict__.update(**result.to_dict())
+    new_state.__dict__.update(**json_body)
+    storage.delete(result)
+    new_state.save()
+    return jsonify(new_state.to_dict()), 200

@@ -6,21 +6,21 @@ from models import storage
 from models.city import City
 
 
-@app_views.route('/states/<state_id>/cities', methods=['GET'])
-@app_views.route('/states/<state_id>/cities/', methods=['GET'])
+@app_views.route('/states/<state_id>/cities',
+                 methods=['GET'], strict_slashes=False)
 def list_cities_of_state(state_id):
     '''Retrieves a list of all City objects'''
     all_states = storage.all("State").values()
     state_obj = [obj.to_dict() for obj in all_states if obj.id == state_id]
-    if state_obj == []:
-        abort(404)
+    # if state_obj == []:
+    #     abort(404)
     list_cities = [obj.to_dict() for obj in storage.all("City").values()
                    if state_id == obj.state_id]
     return jsonify(list_cities)
 
 
-@app_views.route('/states/<state_id>/cities', methods=['POST'])
-@app_views.route('/states/<state_id>/cities/', methods=['POST'])
+@app_views.route('/states/<state_id>/cities',
+                 methods=['POST'], strict_slashes=False)
 def create_city(state_id):
     '''Creates a City'''
     if not request.get_json():

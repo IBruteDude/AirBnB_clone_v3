@@ -10,10 +10,9 @@ from models.review import Review
 from models.state import State
 from models.user import User
 from api.v1.views import app_views
-from api.v1.views.cities import cities
 
 
-@app_views.route('/stats', methods = ['GET'], strict_slashs=True)
+@app_views.route('/stats', methods = ['GET'], strict_slashes=False)
 def status_report():
     """report the status of the api"""
     status_dict = {
@@ -26,7 +25,7 @@ def status_report():
     }
     return jsonify(status_dict)
 
-@app_views.route('/status')
+@app_views.route('/status', strict_slashes=False)
 def get_status():
     """Get the status"""
     status = jsonify({
