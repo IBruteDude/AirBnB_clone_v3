@@ -5,8 +5,9 @@ from flask import jsonify, abort, request
 from models import storage
 from models.review import Review
 
-@app_views.route('/places/<place_id>/reviews', methods=['GET'])
-@app_views.route('/places/<place_id>/reviews/', methods=['GET'])
+
+@app_views.route('/places/<place_id>/reviews',
+                 methods=['GET'], strict_slashes=False)
 def list_reviews_of_place(place_id):
     ''' Retrieves a list of all Review objects of a Place '''
     all_places = storage.all("Place").values()
@@ -18,7 +19,8 @@ def list_reviews_of_place(place_id):
     return jsonify(list_reviews)
 
 
-@app_views.route('/places/<place_id>/reviews', methods=['POST'])
+@app_views.route('/places/<place_id>/reviews',
+                 methods=['POST'], strict_slashes=False)
 def create_review(place_id):
     '''Creates a Review'''
     if not request.get_json():

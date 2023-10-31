@@ -5,8 +5,10 @@ from os import getenv
 from models import storage
 from flask import Flask, make_response, jsonify
 
+
 app = Flask(__name__)
 app.register_blueprint(app_views)
+
 
 @app.teardown_appcontext
 def teardown(self):

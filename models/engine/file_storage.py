@@ -4,6 +4,7 @@ Contains the FileStorage class
 """
 
 import json
+from datetime import datetime
 from models.amenity import Amenity
 from models.base_model import BaseModel
 from models.city import City
@@ -45,6 +46,9 @@ class FileStorage:
         json_objects = {}
         for key in self.__objects:
             json_objects[key] = self.__objects[key].to_dict()
+            for jkey, jvalue in json_objects[key].items():
+                if type(jvalue) is datetime:
+                    json_objects[key][jkey] = jvalue.isoformat()
         with open(self.__file_path, 'w') as f:
             json.dump(json_objects, f)
 
@@ -55,7 +59,7 @@ class FileStorage:
                 jo = json.load(f)
             for key in jo:
                 self.__objects[key] = classes[jo[key]["__class__"]](**jo[key])
-        except:
+        except Exception:
             pass
 
     def delete(self, obj=None):
@@ -71,7 +75,7 @@ class FileStorage:
 
     def get(self, cls, id):
         """find an object based on its class and id if found"""
-        return self.__objects[f'{cls.__name__}.{id}']
+        return self.__objects.get(f'{cls.__name__}.{id}')
 
     def count(self, cls=None):
         """count the stored instances of a given class, or of all classes"""

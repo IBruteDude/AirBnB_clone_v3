@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""It is a view for City objects that handles all default RESTFul API actions"""
+"""Create a view for City objects that handles default RESTFul API actions"""
 from api.v1.views import app_views
 from flask import jsonify, abort, request
 from models import storage
