@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""managing reviews"""
+"""handle routes to the reviews api endpoint"""
 from api.v1.views import app_views
 from flask import jsonify, abort, request
 from models import storage

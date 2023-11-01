@@ -102,8 +102,8 @@ class TestCity(unittest.TestCase):
         c = City()
         new_d = c.to_dict()
         self.assertEqual(new_d["__class__"], "City")
-        self.assertEqual(type(new_d["created_at"]), datetime)
-        self.assertEqual(type(new_d["updated_at"]), datetime)
+        self.assertEqual(type(new_d["created_at"]), str)
+        self.assertEqual(type(new_d["updated_at"]), str)
         # self.assertEqual(new_d["created_at"],
         #                  c.created_at.strftime(t_format))
         # self.assertEqual(new_d["updated_at"],

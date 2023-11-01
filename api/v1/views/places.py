@@ -67,6 +67,7 @@ def places_poster(city_id):
     new_place.save()
     return jsonify(new_place.to_dict()), 201
 
+
 @app_views.route('/places/<place_id>',
                  methods=['PUT'], strict_slashes=False)
 def places_putter(place_id):
