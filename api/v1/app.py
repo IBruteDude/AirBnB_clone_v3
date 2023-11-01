@@ -4,11 +4,12 @@ from api.v1.views import app_views
 from os import getenv
 from models import storage
 from flask import Flask, make_response, jsonify
+from flask_cors import CORS
 
 
 app = Flask(__name__)
 app.register_blueprint(app_views)
-
+cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
 @app.teardown_appcontext
 def teardown(self):
@@ -18,7 +19,7 @@ def teardown(self):
 
 @app.errorhandler(404)
 def not_found(error):
-    ''' handles 404 error and gives json formatted response '''
+    """handles 404 error and gives json formatted response"""
     print(error)
     return make_response(jsonify({'error': 'Not found'}), 404)
 

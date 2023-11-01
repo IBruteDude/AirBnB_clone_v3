@@ -9,6 +9,7 @@ from api.v1.views import app_views
 @app_views.route('/states',
                  methods=['GET'], strict_slashes=False)
 def states_getter():
+    """get a list of all stored states"""
     states = storage.all(State)
     return jsonify([state.to_dict() for state in states.values()]), 200
 
@@ -16,6 +17,7 @@ def states_getter():
 @app_views.route('/states/<state_id>',
                  methods=['GET'], strict_slashes=False)
 def state_getter(state_id):
+    """get a specific stored state based on id"""
     result = storage.get(State, state_id)
     if result is None:
         abort(404)
@@ -25,6 +27,7 @@ def state_getter(state_id):
 @app_views.route('/states/<state_id>',
                  methods=['DELETE'], strict_slashes=False)
 def states_deleter(state_id=None):
+    """delete a specific stored state based on id"""
     if state_id is None:
         abort(404)
     result = storage.get(State, state_id)
@@ -38,6 +41,7 @@ def states_deleter(state_id=None):
 @app_views.route('/states',
                  methods=['POST'], strict_slashes=False)
 def states_poster():
+    """create a new state in storage"""
     json_body = request.get_json()
     if json_body is None:
         abort(400, "Not a JSON")
@@ -51,6 +55,7 @@ def states_poster():
 @app_views.route('/states/<state_id>',
                  methods=['PUT'], strict_slashes=False)
 def states_putter(state_id):
+    """update a specific stored state based on id"""
     result = storage.get(State, state_id)
     if result is None:
         abort(404)
@@ -58,8 +63,8 @@ def states_putter(state_id):
     if json_body is None:
         abort(400, "Not a JSON")
     new_state = State(name="dummy")
-    new_state.__dict__.update(**result.to_dict())
-    new_state.__dict__.update(**json_body)
+    new_state.__init__(**result.to_dict())
+    new_state.__init__(**json_body)
     storage.delete(result)
     new_state.save()
     return jsonify(new_state.to_dict()), 200
